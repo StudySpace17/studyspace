@@ -1,4 +1,4 @@
-const C="studyspace-v07";
+const C="studyspace-v08";
 const SHELL=["./","./index.html","./manifest.json","./icon-192.png","./icon-512.png"];
 const LIBS=["https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js","https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js","https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(SHELL).then(()=>Promise.all(LIBS.map(u=>c.add(u).catch(()=>{}))))).then(()=>self.skipWaiting()))});
