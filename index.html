@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#b9a4e8">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<title>StudySpace</title>
+<style>
+:root{--accent:#8e72d0;--accent2:#e9a3c4;--soft:#f0eafc;--pink:#fde8f1;--bg:#faf6fd;--surface:#fff;--text:#2d2840;--muted:#7d7794;--line:#ebe4f5;--danger:#c45c70;--paper:#fffefe;--ruled:#efe9f8}
+:root[data-theme=dunkel]{--accent:#b9a1f0;--accent2:#e8a6c7;--soft:#312c45;--pink:#3d2b3a;--bg:#1b1826;--surface:#262236;--text:#f4f0fb;--muted:#b3acc6;--line:#3a3450;--paper:#2b2640;--ruled:#37314f}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 0 0,var(--pink),transparent 40%),radial-gradient(circle at 100% 0,var(--soft),transparent 45%),var(--bg);background-attachment:fixed;color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,input,textarea,select{font:inherit}button{cursor:pointer}
+.app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}
+aside{background:var(--surface);border-right:1px solid var(--line);padding:22px 16px;display:flex;flex-direction:column;gap:22px}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px;font-weight:800;font-size:20px}
+.logo{width:36px;height:36px;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;display:grid;place-items:center}
+.nav{display:grid;gap:6px}.nav button{border:0;background:transparent;color:var(--muted);text-align:left;padding:12px;border-radius:14px}
+.nav button.active,.nav button:hover{background:var(--soft);color:var(--accent);font-weight:650}
+main{padding:28px clamp(16px,4vw,48px);max-width:1200px;width:100%;margin:auto}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px}
+h1{font-size:clamp(24px,4vw,33px);letter-spacing:-.8px;margin:0 0 4px}h2{font-size:19px;margin:0 0 12px}p{margin:0;color:var(--muted)}
+.eyebrow{color:var(--accent);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1px}
+.avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--soft),var(--pink));color:var(--accent);display:grid;place-items:center;font-weight:800}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 6px 22px #6a4fb012}
+.welcome{grid-column:span 8;background:linear-gradient(120deg,var(--soft),var(--pink));display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:150px}
+.welcome .art{font-size:46px;letter-spacing:6px}.stat{grid-column:span 4}.stat strong{font-size:30px;display:block;margin-top:8px}
+.section{grid-column:1/-1;margin-top:6px}
+.folder{grid-column:span 3;min-height:120px;cursor:pointer;transition:.15s}.folder:hover{transform:translateY(-2px);border-color:var(--accent)}
+.folder .emoji{font-size:25px;margin-bottom:10px}.folder small{color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:0;background:var(--accent);color:#fff;border-radius:13px;padding:10px 14px;font-weight:650}
+.btn.secondary{background:var(--soft);color:var(--accent)}.btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.btn.on{background:var(--accent);color:#fff;border-color:var(--accent)}.btn:disabled{opacity:.45}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0}
+input,textarea,select{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;color:var(--text);width:100%}
+input:focus,textarea:focus{outline:2px solid var(--soft);border-color:var(--accent)}
+.item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}
+.muted{color:var(--muted);font-size:13px}.empty{padding:26px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:16px}
+.sw{width:30px;height:30px;border-radius:50%;border:3px solid var(--surface);outline:1px solid var(--line);padding:0}.sw.sel{outline:2px solid var(--accent)}
+.paperwrap{position:relative;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--paper)}
+.paperwrap textarea,.paperwrap canvas{position:absolute;left:0;top:0;width:100%;height:100%}
+.paperwrap textarea{border:0;border-radius:0;background:transparent;line-height:32px;padding:0 20px;resize:none;outline:none;font-size:17px}
+.paperwrap canvas{touch-action:none}
+.pdfwrap{position:relative;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fff;width:100%}.pdfwrap canvas{display:block}#po{position:absolute;left:0;top:0;touch-action:none}.pimg{position:absolute;touch-action:none;user-select:none;border-radius:8px}.task-done{text-decoration:line-through;color:var(--muted)}
+.mobile-nav{display:none}
+@media(max-width:850px){.app{grid-template-columns:1fr}aside{display:none}main{padding:18px 14px 90px}.welcome,.stat{grid-column:span 12}.folder{grid-column:span 6}
+.mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--line);justify-content:space-around;padding:8px 4px calc(8px + env(safe-area-inset-bottom));z-index:5}
+.mobile-nav button{border:0;background:transparent;color:var(--muted);font-size:11px;display:grid;gap:2px;justify-items:center}.mobile-nav button.active{color:var(--accent);font-weight:700}.mobile-nav span{font-size:19px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+<div class="brand"><div class="logo">✿</div> StudySpace</div>
+<div class="nav">
+<button class="active" data-page="home">⌂ &nbsp; Übersicht</button>
+<button data-page="notebooks">▤ &nbsp; Meine Lernfelder</button>
+<button data-page="planner">▦ &nbsp; Schulplaner</button>
+<button data-page="cards">❏ &nbsp; Karteikarten</button>
+<button data-page="learn">◷ &nbsp; Lernzeit & Prüfung</button>
+<button data-page="search">⌕ &nbsp; Suche</button>
+<button data-page="ai">✧ &nbsp; KI-Lernstudio</button>
+<button data-page="settings">⚙ &nbsp; Einstellungen</button>
+</div>
+<div style="margin-top:auto" class="muted">Dein persönlicher Lernplatz ✦<br>Version 0.7 · installierbar</div>
+</aside>
+<main id="main"></main>
+</div>
+<nav class="mobile-nav">
+<button class="active" data-page="home"><span>⌂</span>Start</button>
+<button data-page="notebooks"><span>▤</span>Lernfelder</button>
+<button data-page="planner"><span>▦</span>Planer</button>
+<button data-page="ai"><span>✧</span>KI</button>
+<button data-page="settings"><span>⚙</span>Mehr</button>
+</nav>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script>
+const FOLDERS=[["LF1","Pädagogische Grundlagen","📘"],["LF2","Gruppe und Gruppendynamik","👥"],["LF3","Kinderschutz und Entwicklung","🧩"],["LF4","Musik, Kunst, Natur und Bewegung","🎨"],["LF5","Bildung und Erziehung","🌱"],["LF6","Zusammenarbeit und Lebenswelten","🤝"],["LF7","Wahlpflichtbereich","⭐"],["Praxis","Praktikum und Reflexion","📝"]];
+const mem={};
+function sGet(k){try{return localStorage.getItem(k)}catch(e){return mem[k]??null}}
+function sSet(k,v){try{localStorage.setItem(k,v)}catch(e){mem[k]=v;if(!window._w){window._w=1;alert("Der Speicher ist voll. Bitte sichere deine Daten unter Einstellungen!")}}}
+const KEY="studyspace_v06",V5="studyspace_v05",V4="studyspace_v04",OLD="studyspace_v03",PH=900;
+function defaults(){return{folders:FOLDERS.map(x=>({id:x[0],name:x[1],emoji:x[2]})),notes:[],tasks:[],cards:[],exams:[],hours:[],lastBackup:0,streak:{last:"",n:0},theme:"hell"}}
+function clean(parsed){
+ const d={...defaults(),...(parsed||{})};
+ if(!Array.isArray(d.folders)||!d.folders.length)d.folders=defaults().folders;
+ if(!Array.isArray(d.tasks))d.tasks=[];if(!Array.isArray(d.cards))d.cards=[];if(!Array.isArray(d.exams))d.exams=[];if(!Array.isArray(d.hours))d.hours=[];if(!d.streak||typeof d.streak!=="object")d.streak={last:"",n:0};
+ if(!Array.isArray(d.notes))d.notes=[];
+ d.notes=d.notes.filter(n=>n&&typeof n==="object").map(n=>{
+  n.pdfAnn=n.pdfAnn&&typeof n.pdfAnn==="object"?n.pdfAnn:{};if(!Array.isArray(n.pages))n.pages=[{body:n.body||"",strokes:[]}];
+  n.pages=n.pages.filter(p=>p&&typeof p==="object").map(p=>{
+   const q={body:String(p.body||""),strokes:Array.isArray(p.strokes)?p.strokes:[],v:p.v||1,tpl:p.tpl||"liniert",imgs:Array.isArray(p.imgs)?p.imgs:[]};
+   if(q.v<2){q.strokes.forEach(s=>(s.points||[]).forEach(pt=>{pt.y=pt.y*330/PH}));q.v=2}
+   return q});
+  if(!n.pages.length)n.pages=[{body:"",strokes:[],v:2}];
+  return n});
+ if(!["hell","dunkel","auto"].includes(d.theme))d.theme="hell";
+ return d}
+function load(){
+ try{const r=sGet(KEY)||sGet(V5)||sGet(V4)||sGet(OLD);return clean(r?JSON.parse(r):null)}
+ catch(e){console.warn(e);return clean(null)}}
+let data=load();
+let page="home",activeFolder=null,activeNote=null,activePage=0;
+let mode="schreiben",tool="pen",color="#2d2840",size=2.5,finger=false;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let saveTimer=null;
+function save(){sSet(KEY,JSON.stringify(data))}
+function saveSoon(){clearTimeout(saveTimer);saveTimer=setTimeout(save,400)}
+function go(p){if(activeNote)saveCurrentPage();page=p;activeNote=null;render();document.querySelectorAll("[data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===p))}
+function header(k,t,s,extra=""){return `<div class="top"><div><div class="eyebrow">${k}</div><h1>${t}</h1><p>${s}</p></div><div class="avatar">✿</div></div>${extra}`}
+function folderCards(list){return list.map(f=>`<div class="card folder" onclick="openFolder('${esc(f.id)}')"><div class="emoji">${f.emoji}</div><strong>${esc(f.id)}</strong><br><small>${esc(f.name)}</small><div class="muted" style="margin-top:8px">${data.notes.filter(n=>n.folder===f.id).length} Notizen</div></div>`).join("")}
+function render(){
+ document.documentElement.dataset.theme=data.theme==="auto"?(matchMedia("(prefers-color-scheme: dark)").matches?"dunkel":"hell"):data.theme;
+ const m=$("#main");
+ if(page==="home")m.innerHTML=header("Schön, dass du da bist ✦","Dein Lernplatz. Deine Regeln.","Alles für deine Erzieherinnenausbildung an einem Ort.")+`${backupBanner()}<div class="grid"><div class="card welcome"><div><div class="eyebrow">StudySpace</div><h2>Heute ist ein guter Tag zum Lernen ✿</h2><p>Schreibe mit dem Stift oder tippe – ganz wie du magst.</p><div class="actions" style="margin-top:14px"><button class="btn" onclick="newNote()">＋ Neue Notiz</button><button class="btn secondary" onclick="go('planner')">Planer öffnen</button><button class="btn secondary" onclick="go('cards')">Karteikarten</button><button class="btn secondary" onclick="go('learn')">Lernzeit</button><button class="btn secondary" onclick="go('search')">Suche</button></div></div><div class="art">✿✦</div></div><div class="card stat"><div class="muted">Deine Lernfelder</div><strong>${data.folders.length}</strong><div class="muted">Bereiche organisiert</div></div><div class="section"><h2>Deine Lernfelder</h2></div>${folderCards(data.folders.slice(0,8))}</div>`;
+ else if(page==="notebooks")m.innerHTML=header("Deine Unterlagen","Meine Lernfelder","Wähle ein Lernfeld oder erstelle eine eigene Sammlung.",`<div class="toolbar"><button class="btn" onclick="addFolder()">＋ Lernfeld hinzufügen</button></div>`)+`<div class="grid">${folderCards(data.folders)}</div>`;
+ else if(page==="folder")renderFolder(m);
+ else if(page==="note")renderNote(m);
+ else if(page==="planner")m.innerHTML=header("Alles im Blick","Schulplaner","Sammle Aufgaben, Abgaben und Lernziele.")+`<div class="card"><h2>Neue Aufgabe</h2><div class="toolbar"><input id="taskText" placeholder="Was musst du erledigen?" style="flex:2;min-width:180px"><input id="taskDate" type="date" style="flex:1;min-width:145px"><button class="btn" onclick="addTask()">Hinzufügen</button></div><h2 style="margin-top:22px">Deine Aufgaben</h2>${data.tasks.length?data.tasks.map((t,i)=>`<div class="item"><label style="display:flex;align-items:center;gap:10px"><input type="checkbox" style="width:auto" ${t.done?"checked":""} onchange="toggleTask(${i})"><span class="${t.done?"task-done":""}">${esc(t.text)} <span class="muted">${esc(t.date||"")}</span></span></label><button class="btn ghost" onclick="deleteTask(${i})">✕</button></div>`).join(""):`<div class="empty">Noch nichts eingetragen. Trag deine erste Aufgabe ein. ✿</div>`}</div>`;
+ else if(page==="cards")m.innerHTML=cardsHtml();else if(page==="learn")m.innerHTML=learnHtml();else if(page==="search")m.innerHTML=searchHtml();else if(page==="pdf"){m.innerHTML=pdfHtml();initPdf()}else if(page==="ai")m.innerHTML=header("Dein Lerncoach","KI-Lernstudio","Hier entsteht deine persönliche Lernhilfe.")+`<div class="card"><div style="font-size:34px">✧</div><h2>Dein Lernassistent</h2><p>Die KI-Anbindung folgt in einer späteren Version. Deine Notizen bleiben bis dahin lokal auf deinem Gerät.</p></div>`;
+ else if(page==="settings")m.innerHTML=header("Mach es zu deinem","Einstellungen","Erscheinungsbild und Datensicherung.")+`<div class="card"><h2>Erscheinungsbild</h2><select onchange="setTheme(this.value)"><option value="hell" ${data.theme==="hell"?"selected":""}>Hell</option><option value="dunkel" ${data.theme==="dunkel"?"selected":""}>Dunkel</option><option value="auto" ${data.theme==="auto"?"selected":""}>Automatisch (Gerät)</option></select><h2 style="margin-top:22px">Datensicherung</h2><p style="margin-bottom:12px">Sichere deine Notizen regelmäßig als Datei. Mit „Sicherung laden“ holst du sie zurück, auch aus Version 0.3.</p><div class="actions"><button class="btn secondary" onclick="exportData()">Daten sichern (JSON)</button><button class="btn ghost" onclick="$('#impInput').click()">Sicherung laden</button><input id="impInput" type="file" accept="application/json,.json" hidden onchange="importData(this.files[0])"></div><p class="muted" style="margin-top:12px">${sGet(KEY)?"Daten werden in diesem Browser gespeichert.":"Noch nichts gespeichert."}</p></div>`;
+}
+function openFolder(id){activeFolder=id;page="folder";render()}
+function renderFolder(m){
+ const f=data.folders.find(x=>x.id===activeFolder);if(!f){go("notebooks");return}
+ const list=data.notes.filter(n=>n.folder===activeFolder);
+ m.innerHTML=header("Lernfeld",`${f.emoji} ${esc(f.id)}`,esc(f.name),`<div class="toolbar"><button class="btn" onclick="newNote()">＋ Neue Notiz</button><button class="btn ghost" onclick="go('notebooks')">← Zurück</button></div>`)+`<div class="card">${list.length?list.map(n=>`<div class="item"><div><strong>${esc(n.title)}</strong><div class="muted">Zuletzt bearbeitet: ${new Date(n.updated).toLocaleDateString("de-DE")} · ${n.pages.length} Seiten${n.pdfName?" · PDF":""}</div></div><div class="actions"><button class="btn secondary" onclick="editNote('${n.id}')">Öffnen</button><button class="btn ghost" onclick="removeNote('${n.id}')">Löschen</button></div></div>`).join(""):`<div class="empty">Hier ist noch Platz für deine Mitschriften ✿</div>`}</div>`}
+function newNote(){if(!activeFolder)activeFolder=data.folders[0].id;const n={id:crypto.randomUUID(),folder:activeFolder,title:"Neue Notiz",pages:[{body:"",strokes:[],v:2}],pdfId:null,pdfName:null,updated:Date.now()};data.notes.unshift(n);save();editNote(n.id)}
+function editNote(id){redo=[];activeNote=id;activePage=0;page="note";render()}
+function removeNote(id){if(!confirm("Notiz wirklich löschen?"))return;const n=data.notes.find(x=>x.id===id);if(n&&n.pdfId)delPdf(n.pdfId).catch(()=>{});data.notes=data.notes.filter(x=>x.id!==id);save();render()}
+const COLORS=["#2d2840","#7c5cc4","#d46a9a","#4f7fd1","#3f9d84","#e08a3c"];
+function renderNote(m){
+ const n=data.notes.find(x=>x.id===activeNote);if(!n){go("notebooks");return}
+ activePage=Math.min(activePage,n.pages.length-1);const pg=n.pages[activePage];
+ m.innerHTML=header("Notizbuch",esc(n.title),"Schreiben und Tippen auf derselben Seite.",`<div class="toolbar"><button class="btn secondary" onclick="saveNote()">Speichern</button><button class="btn ghost" onclick="backFolder()">← Zurück</button></div>`)+
+ `<div class="toolbar"><input id="noteTitle" value="${esc(n.title)}" placeholder="Titel der Notiz" style="flex:1;min-width:180px"><button class="btn secondary" onclick="addPage()">＋ Seite</button><button class="btn ghost" onclick="deletePage()" ${n.pages.length===1?"disabled":""}>Seite löschen</button></div>
+ <div class="toolbar" style="justify-content:space-between"><div class="actions"><button class="btn ghost" onclick="changePage(-1)" ${activePage===0?"disabled":""}>←</button><span class="muted">Seite ${activePage+1} von ${n.pages.length}</span><button class="btn ghost" onclick="changePage(1)" ${activePage===n.pages.length-1?"disabled":""}>→</button></div>
+ <div class="actions"><button class="btn ${mode==="schreiben"?"on":"ghost"}" onclick="setMode('schreiben')">✎ Schreiben</button><button class="btn ${mode==="tippen"?"on":"ghost"}" onclick="setMode('tippen')">⌨ Tippen</button></div></div>
+ <div class="card" style="padding:12px"><div class="toolbar" style="margin-top:0">
+ <button class="btn ${tool==="pen"?"on":"ghost"}" onclick="setTool('pen')">✎ Stift</button><button class="btn ${tool==="highlighter"?"on":"ghost"}" onclick="setTool('highlighter')">▰ Marker</button><button class="btn ${tool==="eraser"?"on":"ghost"}" onclick="setTool('eraser')">⌫ Radierer</button>
+ ${COLORS.map(c=>`<button class="sw ${c===color?"sel":""}" style="background:${c}" onclick="setColor('${c}')" aria-label="Farbe"></button>`).join("")}
+ <label class="muted">Stärke <input type="range" min="1" max="18" step="0.5" value="${size}" style="width:100px" oninput="size=Number(this.value)"></label>
+ <label class="muted" style="display:flex;gap:6px;align-items:center"><input type="checkbox" style="width:auto" ${finger?"checked":""} onchange="finger=this.checked;render()"> Mit Finger malen</label>
+ <button class="btn ghost" onclick="clearCanvas()">Seite leeren</button></div>
+ <div class="toolbar"><button class="btn ghost" onclick="undo()">↶ Zurück</button><button class="btn ghost" onclick="redoS()">↷ Vor</button><select style="width:auto" onchange="setTpl(this.value)">${["liniert","kariert","punktiert","leer"].map(t=>`<option ${(pg.tpl||"liniert")===t?"selected":""}>${t}</option>`).join("")}</select><select style="width:auto" onchange="insTpl(this.value);this.selectedIndex=0"><option>Textvorlage …</option>${Object.keys(TPLS).map(k=>`<option>${k}</option>`).join("")}</select><button class="btn ghost" onclick="$('#imgInput').click()">🖼 Bild</button><input id="imgInput" type="file" accept="image/*" hidden onchange="addImg(this.files[0])"><button class="btn ghost" onclick="copyText()">⧉ Text kopieren</button>${(pg.imgs||[]).map((im,i)=>`<label class="muted">Bild ${i+1} <input type="range" min="10" max="100" value="${im.w*100}" style="width:90px" oninput="imgW(${i},this.value)"> <button class="btn ghost" onclick="delImg(${i})">✕</button></label>`).join("")}</div><div class="paperwrap" id="paper" style="height:${PH}px;background:${tplBg(pg.tpl)}"><textarea id="noteBody" placeholder="Hier kannst du tippen …">${esc(pg.body)}</textarea>${(pg.imgs||[]).map((im,i)=>`<img class="pimg" data-i="${i}" src="${im.src}" style="left:${im.x*100}%;top:${im.y*PH}px;width:${im.w*100}%" alt="">`).join("")}<canvas id="draw"></canvas></div>
+ <p class="muted" style="margin-top:8px">${mode==="schreiben"?"Schreiben-Modus: Der Stift zeichnet. Handschrift bleibt genau so erhalten, wie du sie schreibst.":"Tippen-Modus: Tippe auf die Seite und schreibe mit der Tastatur."}</p></div>
+ <div class="card" style="margin-top:16px"><div class="eyebrow">PDF-Anlage</div><div class="muted" style="margin-top:8px">${n.pdfName?`Angehängt: ${esc(n.pdfName)}`:"Noch keine PDF-Datei angehängt."}</div><div class="toolbar"><button class="btn ghost" onclick="$('#pdfInput').click()">PDF hinzufügen</button><input id="pdfInput" type="file" accept="application/pdf,.pdf" hidden onchange="importPdf(this.files[0])"><button class="btn" onclick="editPdf()">✎ PDF bearbeiten</button><button class="btn ghost" onclick="openPdf()">PDF öffnen</button><button class="btn ghost" onclick="removePdf()">PDF entfernen</button></div></div>`;
+ const body=$("#noteBody");
+ body.addEventListener("input",()=>{pg.body=body.value;n.updated=Date.now();saveSoon()});
+ body.style.pointerEvents=mode==="tippen"?"auto":"none";
+ body.readOnly=mode!=="tippen";wireImgs(pg);
+ initCanvas(pg);
+}
+function setMode(x){saveCurrentPage();mode=x;render()}
+function setTool(x){saveCurrentPage();tool=x;render()}
+function setColor(c){saveCurrentPage();color=c;if(tool==="eraser")tool="pen";render()}
+function saveCurrentPage(){
+ const n=data.notes.find(x=>x.id===activeNote);if(!n)return;
+ const b=$("#noteBody");if(b&&n.pages[activePage])n.pages[activePage].body=b.value;
+ const t=$("#noteTitle");if(t)n.title=t.value.trim()||n.title||"Unbenannte Notiz";
+ n.updated=Date.now();clearTimeout(saveTimer);save()}
+function saveNote(){saveCurrentPage();alert("Notiz gespeichert!")}
+function changePage(d){saveCurrentPage();const n=data.notes.find(x=>x.id===activeNote);activePage=Math.max(0,Math.min(n.pages.length-1,activePage+d));redo=[];render()}
+function addPage(){saveCurrentPage();const n=data.notes.find(x=>x.id===activeNote);n.pages.push({body:"",strokes:[],v:2});activePage=n.pages.length-1;redo=[];save();render()}
+function deletePage(){const n=data.notes.find(x=>x.id===activeNote);if(n.pages.length<=1)return;if(confirm("Diese Seite wirklich löschen?")){n.pages.splice(activePage,1);activePage=Math.max(0,activePage-1);save();render()}}
+function clearCanvas(){const n=data.notes.find(x=>x.id===activeNote);if(!n)return;if(confirm("Alle Handschrift und Zeichnungen auf dieser Seite löschen? (Getippter Text bleibt.)")){n.pages[activePage].strokes=[];save();render()}}
+function backFolder(){saveCurrentPage();page="folder";activeNote=null;render()}
+function initCanvas(pg){
+ const c=$("#draw"),wrap=$("#paper");if(!c)return;
+ const W=wrap.clientWidth,dpr=window.devicePixelRatio||1;
+ c.width=Math.round(W*dpr);c.height=Math.round(PH*dpr);
+ const ctx=c.getContext("2d");ctx.scale(dpr,dpr);ctx.lineCap="round";ctx.lineJoin="round";
+ c.style.pointerEvents=mode==="schreiben"?"auto":"none";
+ const setup=s=>{ctx.globalAlpha=s.tool==="highlighter"?.3:1;ctx.globalCompositeOperation=s.tool==="eraser"?"destination-out":"source-over";ctx.strokeStyle=s.color;ctx.fillStyle=s.color;ctx.lineWidth=s.tool==="eraser"?s.size*3:s.tool==="highlighter"?Math.max(10,s.size*4):s.size};
+ const X=p=>p.x*W,Y=p=>p.y*PH;
+ const full=s=>{if(!s.points||!s.points.length)return;ctx.save();setup(s);ctx.beginPath();const a=s.points;
+  if(a.length===1){ctx.arc(X(a[0]),Y(a[0]),ctx.lineWidth/2,0,7);ctx.fill()}
+  else{ctx.moveTo(X(a[0]),Y(a[0]));for(let i=1;i<a.length-1;i++){ctx.quadraticCurveTo(X(a[i]),Y(a[i]),(X(a[i])+X(a[i+1]))/2,(Y(a[i])+Y(a[i+1]))/2)}ctx.lineTo(X(a[a.length-1]),Y(a[a.length-1]))}
+  ctx.stroke();ctx.restore()};
+ const redraw=()=>{ctx.clearRect(0,0,W,PH);pg.strokes.forEach(full)};
+ redraw();
+ let cur=null;
+ const pos=e=>{const r=c.getBoundingClientRect();return{x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))}};
+ const allowed=e=>e.pointerType!=="touch"||finger;
+ c.onpointerdown=e=>{if(!allowed(e))return;e.preventDefault();c.setPointerCapture(e.pointerId);cur={tool,color,size,points:[pos(e)]};if(cur.tool==="highlighter")redraw(),full(cur);else full(cur)};
+ c.onpointermove=e=>{if(!cur)return;e.preventDefault();
+  const evs=e.getCoalescedEvents?e.getCoalescedEvents():[e];
+  for(const ev of (evs.length?evs:[e])){
+   const p=pos(ev),a=cur.points,last=a[a.length-1];a.push(p);
+   if(cur.tool!=="highlighter"){ctx.save();setup(cur);ctx.beginPath();ctx.moveTo(X(last),Y(last));ctx.lineTo(X(p),Y(p));ctx.stroke();ctx.restore()}}
+  if(cur.tool==="highlighter"){redraw();full(cur)}};
+ const end=()=>{if(!cur)return;pg.strokes.push(cur);redo.length=0;cur=null;redraw();saveCurrentPage()};
+ c.onpointerup=end;
+ c.onpointercancel=()=>{if(cur){pg.strokes.push(cur);cur=null;redraw();saveCurrentPage()}};
+}
+const DB="studyspace-files",ST="pdfs";
+const openDB=()=>new Promise((res,rej)=>{const r=indexedDB.open(DB,1);r.onupgradeneeded=()=>r.result.createObjectStore(ST);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+async function putPdf(id,b){const db=await openDB();return new Promise((res,rej)=>{const t=db.transaction(ST,"readwrite");t.objectStore(ST).put(b,id);t.oncomplete=res;t.onerror=()=>rej(t.error)})}
+async function getPdf(id){const db=await openDB();return new Promise((res,rej)=>{const r=db.transaction(ST).objectStore(ST).get(id);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function delPdf(id){if(!id)return;const db=await openDB();return new Promise((res,rej)=>{const t=db.transaction(ST,"readwrite");t.objectStore(ST).delete(id);t.oncomplete=res;t.onerror=()=>rej(t.error)})}
+async function importPdf(f){if(!f)return;if(!f.name.toLowerCase().endsWith(".pdf")&&f.type!=="application/pdf"){alert("Bitte wähle eine PDF-Datei aus.");return}
+ saveCurrentPage();const n=data.notes.find(x=>x.id===activeNote);
+ try{if(n.pdfId)await delPdf(n.pdfId);const id=crypto.randomUUID();await putPdf(id,f);n.pdfId=id;n.pdfName=f.name;save();render()}catch(e){alert("Die PDF konnte nicht gespeichert werden.");console.error(e)}}
+async function openPdf(){const n=data.notes.find(x=>x.id===activeNote);if(!n||!n.pdfId){alert("Noch keine PDF angehängt.");return}
+ try{const b=await getPdf(n.pdfId);if(!b){alert("PDF nicht gefunden. Bitte erneut hinzufügen.");return}const u=URL.createObjectURL(b);if(!window.open(u,"_blank")){const a=document.createElement("a");a.href=u;a.download=n.pdfName||"StudySpace.pdf";a.click()}setTimeout(()=>URL.revokeObjectURL(u),60000)}catch(e){alert("PDF konnte nicht geöffnet werden.")}}
+async function removePdf(){const n=data.notes.find(x=>x.id===activeNote);if(!n||!n.pdfId)return;if(confirm("PDF-Anlage entfernen?")){saveCurrentPage();await delPdf(n.pdfId);n.pdfId=null;n.pdfName=null;save();render()}}
+function addFolder(){const name=prompt("Name des Lernfelds oder Ordners:");if(!name)return;let id=name.trim().slice(0,12);if(data.folders.some(f=>f.id===id))id+="2";data.folders.push({id,name:name.trim(),emoji:"📂"});save();render()}
+function addTask(){const v=$("#taskText").value.trim();if(!v)return;data.tasks.push({text:v,date:$("#taskDate").value,done:false});save();render()}
+function toggleTask(i){data.tasks[i].done=!data.tasks[i].done;save();render()}
+function deleteTask(i){data.tasks.splice(i,1);save();render()}
+function setTheme(t){data.theme=t;save();render()}
+function exportData(){data.lastBackup=Date.now();save();const b=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="studyspace-sicherung.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000)}
+function importData(f){if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=clean(JSON.parse(r.result));if(!confirm("Aktuelle Daten durch die Sicherung ersetzen? Sichere vorher, falls hier Neues steht."))return;data=d;save();alert("Sicherung geladen.");go("home")}catch(e){alert("Diese Datei konnte nicht gelesen werden.")}};r.readAsText(f)}
+
+let redo=[],cf=null,sq=null,si=0,flip=false,tLeft=1500,tRun=null,tBreak=false;
+const TPLS={"Praxistagebuch":"Datum:\nGruppe / Alter:\nSituation:\nBeobachtung:\nMeine Rolle:\nReflexion:\nNächster Schritt:\n","Beobachtungsbogen":"Kind (Kürzel):\nDatum / Ort:\nBeobachtungsziel:\nWas habe ich gesehen? (nur beschreiben)\nInterpretation:\nFolgerung fürs Angebot:\n","Reflexionsfragen":"Was ist heute gut gelungen?\nWas war schwierig – und warum?\nWie haben die Kinder reagiert?\nWas würde ich beim nächsten Mal anders machen?\nWas habe ich über mich gelernt?\n","Angebotsplanung":"Thema:\nAltersgruppe:\nZiel:\nMaterial:\nAblauf:\nReflexion:\n"};
+function curPg(){const n=data.notes.find(x=>x.id===activeNote);return n.pages[activePage]}
+function tplBg(t){const l="repeating-linear-gradient(transparent 0 31px,var(--ruled) 31px 32px)",g="repeating-linear-gradient(90deg,transparent 0 31px,var(--ruled) 31px 32px)";
+ return t==="leer"?"none":t==="kariert"?l+","+g:t==="punktiert"?"radial-gradient(#c9bde3 1.3px,transparent 1.8px) 0 0/32px 32px":l}
+function setTpl(t){saveCurrentPage();curPg().tpl=t;save();render()}
+function undo(){saveCurrentPage();const pg=curPg();if(pg.strokes.length){redo.push(pg.strokes.pop());save();render()}}
+function redoS(){saveCurrentPage();const pg=curPg();if(redo.length){pg.strokes.push(redo.pop());save();render()}}
+function insTpl(k){if(!TPLS[k])return;const b=$("#noteBody");b.value=(b.value?b.value+"\n\n":"")+TPLS[k];b.dispatchEvent(new Event("input"));saveCurrentPage()}
+function copyText(){saveCurrentPage();const n=data.notes.find(x=>x.id===activeNote);const t=n.pages.map(p=>p.body).filter(Boolean).join("\n\n");
+ if(!t){alert("Auf dieser Notiz steht noch kein getippter Text.");return}
+ const fb=()=>{const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand("copy")}catch(e){}a.remove();alert(ok?"Text kopiert ✿":"Kopieren hat nicht geklappt.")};
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(()=>alert("Text kopiert ✿"),fb);else fb()}
+function addImg(f){if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,1000/Math.max(im.width,im.height)),cv=document.createElement("canvas");cv.width=im.width*k;cv.height=im.height*k;cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);saveCurrentPage();const pg=curPg();pg.imgs=pg.imgs||[];pg.imgs.push({src:cv.toDataURL("image/jpeg",.8),x:.05,y:.05,w:.4});save();render()};im.src=r.result};r.readAsDataURL(f)}
+function imgW(i,v){const pg=curPg();pg.imgs[i].w=v/100;const e=document.querySelector('.pimg[data-i="'+i+'"]');if(e)e.style.width=v+"%";saveSoon()}
+function delImg(i){if(confirm("Bild entfernen?")){saveCurrentPage();curPg().imgs.splice(i,1);save();render()}}
+function wireImgs(pg){document.querySelectorAll(".pimg").forEach(el=>{const im=pg.imgs[el.dataset.i];el.style.pointerEvents=mode==="tippen"?"auto":"none";let d=null;
+ el.onpointerdown=e=>{e.preventDefault();el.setPointerCapture(e.pointerId);d={ox:e.clientX,oy:e.clientY,x:im.x,y:im.y,w:$("#paper").getBoundingClientRect().width}};
+ el.onpointermove=e=>{if(!d)return;im.x=Math.max(0,Math.min(1-im.w,d.x+(e.clientX-d.ox)/d.w));im.y=Math.max(0,d.y+(e.clientY-d.oy)/PH);el.style.left=im.x*100+"%";el.style.top=im.y*PH+"px"};
+ el.onpointerup=()=>{d=null;save()}})}
+function cardsHtml(){cf=cf||data.folders[0].id;const list=data.cards.filter(c=>c.folder===cf);let body;
+ if(sq){const c=data.cards.find(x=>x.id===sq[si]);if(!c){sq=null;return cardsHtml()}
+  body=`<div class="card" style="text-align:center;padding:36px;cursor:pointer" onclick="flip=!flip;render()"><div class="muted">Karte ${si+1} von ${sq.length} · tippe zum Umdrehen</div><h2 style="margin:22px 0;white-space:pre-wrap">${esc(flip?c.back:c.front)}</h2></div><div class="toolbar"><button class="btn secondary" onclick="rate(-1)">Nochmal</button><button class="btn" onclick="rate(1)">Gewusst ✓</button><button class="btn ghost" onclick="sq=null;render()">Beenden</button></div>`}
+ else body=`<div class="card"><div class="toolbar" style="margin-top:0"><select style="width:auto" onchange="cf=this.value;render()">${data.folders.map(f=>`<option value="${esc(f.id)}" ${f.id===cf?"selected":""}>${esc(f.id)} · ${esc(f.name)}</option>`).join("")}</select><button class="btn" onclick="startCards()">▶ Lernen (${list.length})</button></div><textarea id="cF" placeholder="Vorderseite (Frage)" rows="2"></textarea><textarea id="cB" placeholder="Rückseite (Antwort)" rows="2" style="margin-top:8px"></textarea><div class="toolbar"><button class="btn secondary" onclick="addCard()">＋ Karte speichern</button></div>${list.length?list.map(c=>`<div class="item"><div><strong>${esc(c.front)}</strong><div class="muted">${esc(c.back)}</div></div><button class="btn ghost" onclick="delCard('${c.id}')">✕</button></div>`).join(""):`<div class="empty">Noch keine Karteikarten in diesem Lernfeld ✿</div>`}</div>`;
+ return header("Wiederholen","Karteikarten","Schwierige Karten kommen öfter dran.")+body}
+function addCard(){const f=$("#cF").value.trim(),b=$("#cB").value.trim();if(!f||!b){alert("Bitte Vorder- und Rückseite ausfüllen.");return}data.cards.push({id:crypto.randomUUID(),folder:cf,front:f,back:b,score:0});save();render()}
+function delCard(id){data.cards=data.cards.filter(c=>c.id!==id);save();render()}
+function startCards(){const l=data.cards.filter(c=>c.folder===cf);if(!l.length){alert("Erstelle zuerst eine Karte.");return}sq=l.sort((a,b)=>(a.score||0)-(b.score||0)||Math.random()-.5).map(c=>c.id);si=0;flip=false;render()}
+function rate(d){const c=data.cards.find(x=>x.id===sq[si]);if(c)c.score=(c.score||0)+d;si++;flip=false;bump();save();if(si>=sq.length){sq=null;alert("Geschafft ✿")}render()}
+const fmt=t=>String(Math.floor(t/60)).padStart(2,"0")+":"+String(t%60).padStart(2,"0");
+function learnHtml(){const ex=[...data.exams].sort((a,b)=>a.date.localeCompare(b.date));
+ return header("Fokus","Lernzeit & Prüfungen","Timer und Countdown bis zur Klassenarbeit.")+`<div class="grid"><div class="card" style="grid-column:span 12;text-align:center"><div class="eyebrow">${tBreak?"Pause":"Lernzeit"}</div><div id="tm" style="font-size:54px;font-weight:800">${fmt(tLeft)}</div><div class="actions" style="justify-content:center"><button class="btn" onclick="tToggle()">${tRun?"Pause":"Start"}</button><button class="btn ghost" onclick="tReset()">Zurücksetzen</button></div><p class="muted" style="margin-top:8px">25 Minuten lernen, 5 Minuten Pause</p></div><div class="card" style="grid-column:span 12"><h2>Klassenarbeiten</h2><div class="toolbar"><input id="exN" placeholder="Fach / Thema" style="flex:2;min-width:150px"><input id="exD" type="date" style="flex:1;min-width:140px"><button class="btn" onclick="addExam()">＋</button></div>${ex.length?ex.map(e=>{const d=Math.ceil((new Date(e.date)-new Date().setHours(0,0,0,0))/864e5);return `<div class="item"><div><strong>${esc(e.name)}</strong><div class="muted">${esc(e.date)}</div></div><div class="actions"><span class="eyebrow">${d>0?"noch "+d+" Tage":d===0?"heute":"vorbei"}</span><button class="btn ghost" onclick="delExam('${e.id}')">✕</button></div></div>`}).join(""):`<div class="empty">Trag deine nächste Klassenarbeit ein ✦</div>`}</div><div class="card" style="grid-column:span 12"><h2>Praxisstunden</h2><p style="margin-bottom:10px">Gesamt: <strong>${Math.round(data.hours.reduce((a,x)=>a+x.h,0)*10)/10} Std.</strong> · Lernserie: <strong>${streakN()} Tage</strong> ✦</p><div class="toolbar"><input id="hD" type="date" style="flex:1;min-width:140px"><input id="hH" type="number" step="0.5" min="0" placeholder="Stunden" style="flex:1;min-width:100px"><button class="btn" onclick="addHours()">＋</button></div>${[...data.hours].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,6).map(x=>`<div class="item"><span>${esc(x.date)} · ${x.h} Std.</span><button class="btn ghost" onclick="delHours('${x.id}')">✕</button></div>`).join("")}</div></div>`}
+function addExam(){const n=$("#exN").value.trim(),d=$("#exD").value;if(!n||!d)return;data.exams.push({id:crypto.randomUUID(),name:n,date:d});save();render()}
+function delExam(id){data.exams=data.exams.filter(e=>e.id!==id);save();render()}
+function tReset(){clearInterval(tRun);tRun=null;tBreak=false;tLeft=1500;render()}
+function tToggle(){if(tRun){clearInterval(tRun);tRun=null}else tRun=setInterval(()=>{tLeft--;const e=$("#tm");if(e)e.textContent=fmt(tLeft);if(tLeft<=0){clearInterval(tRun);tRun=null;tBreak=!tBreak;if(tBreak){bump();save()}tLeft=tBreak?300:1500;if(navigator.vibrate)navigator.vibrate(300);alert(tBreak?"Zeit für eine Pause ✿":"Weiter geht’s ✦");if(page==="learn")render()}},1000);render()}
+function searchHtml(){return header("Finden","Suche","Durchsucht Titel, getippten Text und Karteikarten.")+`<div class="card"><input id="q" placeholder="Suchbegriff …" oninput="doSearch(this.value)"><div id="res" style="margin-top:12px"></div></div>`}
+function openNote(id){const n=data.notes.find(x=>x.id===id);activeFolder=n.folder;editNote(id)}
+function doSearch(v){v=v.trim().toLowerCase();const r=$("#res");if(!v){r.innerHTML="";return}
+ const ns=data.notes.filter(n=>n.title.toLowerCase().includes(v)||n.pages.some(p=>p.body.toLowerCase().includes(v)));
+ const cs=data.cards.filter(c=>(c.front+" "+c.back).toLowerCase().includes(v));
+ r.innerHTML=(ns.map(n=>`<div class="item"><span>${esc(n.title)} <span class="muted">${esc(n.folder)}</span></span><button class="btn secondary" onclick="openNote('${n.id}')">Öffnen</button></div>`).join("")+cs.map(c=>`<div class="item"><span>❏ ${esc(c.front)} <span class="muted">${esc(c.folder)}</span></span></div>`).join(""))||`<div class="empty">Nichts gefunden.</div>`}
+
+const ISO=d=>d.toISOString().slice(0,10);
+function streakN(){const t=ISO(new Date()),y=ISO(new Date(Date.now()-864e5));return data.streak&&(data.streak.last===t||data.streak.last===y)?data.streak.n:0}
+function bump(){const t=ISO(new Date());if(data.streak.last===t)return;data.streak={last:t,n:streakN()+1}}
+function addHours(){const d=$("#hD").value,h=parseFloat($("#hH").value);if(!d||!(h>0)){alert("Bitte Datum und Stunden eintragen.");return}data.hours.push({id:crypto.randomUUID(),date:d,h});save();render()}
+function delHours(id){data.hours=data.hours.filter(x=>x.id!==id);save();render()}
+function backupBanner(){if(!(data.notes.length||data.cards.length))return"";if(data.lastBackup&&(Date.now()-data.lastBackup)/864e5<=7)return"";
+ return `<div class="card" style="margin-bottom:16px;background:var(--pink)"><div class="actions" style="justify-content:space-between"><span>${data.lastBackup?"Deine letzte Sicherung ist über eine Woche alt.":"Du hast noch keine Sicherung gemacht."} ✿</span><button class="btn" onclick="exportData();render()">Jetzt sichern</button></div></div>`}
+let pdfDoc=null,pdfNo=1,pdfBytes=null,pdfRedraw=null;
+const szOf=s=>s.tool==="highlighter"?Math.max(10,s.size*4):s.size;
+async function editPdf(){saveCurrentPage();const n=data.notes.find(x=>x.id===activeNote);if(!n||!n.pdfId){alert("Hänge zuerst eine PDF an.");return}
+ if(!window.pdfjsLib){alert("Die PDF-Funktion braucht beim Öffnen Internet. Bitte verbinde das Tablet mit dem Internet und lade StudySpace neu.");return}
+ try{const b=await getPdf(n.pdfId);if(!b){alert("PDF nicht gefunden. Bitte erneut hinzufügen.");return}
+  pdfBytes=await b.arrayBuffer();
+  pdfjsLib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob(['importScripts("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js")'],{type:"text/javascript"}));
+  pdfDoc=await pdfjsLib.getDocument({data:pdfBytes.slice(0)}).promise}catch(e){alert("Die PDF konnte nicht geladen werden.");console.error(e);return}
+ n.pdfAnn=n.pdfAnn||{};pdfNo=1;page="pdf";render()}
+function closePdf(){save();page="note";render()}
+function pdfGo(d){pdfNo=Math.max(1,Math.min(pdfDoc.numPages,pdfNo+d));render()}
+function pdfTool(t){tool=t;document.querySelectorAll(".ptool").forEach(b=>{const on=b.dataset.t===t;b.classList.toggle("on",on);b.classList.toggle("ghost",!on)})}
+function pdfColor(c){color=c;if(tool==="eraser")pdfTool("pen");document.querySelectorAll(".psw").forEach(b=>b.classList.toggle("sel",b.dataset.c===c))}
+function pdfUndo(){const n=data.notes.find(x=>x.id===activeNote);const a=n.pdfAnn[pdfNo];if(a&&a.length){a.pop();save();pdfRedraw&&pdfRedraw()}}
+function pdfHtml(){const n=data.notes.find(x=>x.id===activeNote);
+ return header("PDF",esc(n.pdfName||"PDF"),"Schreibe, markiere und zeichne direkt auf der Seite.",`<div class="toolbar"><button class="btn ghost" onclick="closePdf()">← Zurück</button><button class="btn secondary" onclick="exportPdf()">⇩ Als PDF exportieren</button></div>`)+
+ `<div class="card" style="padding:12px"><div class="toolbar" style="margin-top:0">${[["pen","✎ Stift"],["highlighter","▰ Marker"],["eraser","⌫ Radierer"]].map(t=>`<button class="btn ptool ${tool===t[0]?"on":"ghost"}" data-t="${t[0]}" onclick="pdfTool('${t[0]}')">${t[1]}</button>`).join("")}${COLORS.map(c=>`<button class="sw psw ${c===color?"sel":""}" data-c="${c}" style="background:${c}" onclick="pdfColor('${c}')" aria-label="Farbe"></button>`).join("")}<label class="muted">Stärke <input type="range" min="1" max="18" step="0.5" value="${size}" style="width:100px" oninput="size=Number(this.value)"></label><label class="muted" style="display:flex;gap:6px;align-items:center"><input type="checkbox" style="width:auto" ${finger?"checked":""} onchange="finger=this.checked"> Mit Finger</label><button class="btn ghost" onclick="pdfUndo()">↶ Zurück</button></div>
+ <div class="toolbar"><button class="btn ghost" onclick="pdfGo(-1)" ${pdfNo<=1?"disabled":""}>←</button><span class="muted">Seite ${pdfNo} von ${pdfDoc.numPages}</span><button class="btn ghost" onclick="pdfGo(1)" ${pdfNo>=pdfDoc.numPages?"disabled":""}>→</button></div>
+ <div class="pdfwrap" id="pw"><canvas id="pc"></canvas><canvas id="po"></canvas></div><p class="muted" style="margin-top:8px">Der Radierer löscht ganze Striche. Das Original der PDF bleibt unverändert.</p></div>`}
+async function initPdf(){const n=data.notes.find(x=>x.id===activeNote),pc=$("#pc"),po=$("#po"),wrap=$("#pw");if(!pc)return;
+ const pgd=await pdfDoc.getPage(pdfNo),W=wrap.clientWidth,dpr=window.devicePixelRatio||1,sc=W/pgd.getViewport({scale:1}).width,vp=pgd.getViewport({scale:sc*dpr}),H=vp.height/dpr;
+ pc.width=po.width=vp.width;pc.height=po.height=vp.height;pc.style.width=po.style.width=W+"px";pc.style.height=po.style.height=H+"px";
+ await pgd.render({canvasContext:pc.getContext("2d"),viewport:vp}).promise;
+ const ctx=po.getContext("2d");ctx.scale(dpr,dpr);ctx.lineCap="round";ctx.lineJoin="round";
+ n.pdfAnn[pdfNo]=n.pdfAnn[pdfNo]||[];const ann=()=>n.pdfAnn[pdfNo];
+ const draw=s=>{const a=s.points;if(!a.length)return;ctx.save();ctx.globalAlpha=s.tool==="highlighter"?.3:1;ctx.strokeStyle=s.color;ctx.fillStyle=s.color;ctx.lineWidth=szOf(s)*W/600;ctx.beginPath();
+  if(a.length===1){ctx.arc(a[0].x*W,a[0].y*H,ctx.lineWidth/2,0,7);ctx.fill()}else{ctx.moveTo(a[0].x*W,a[0].y*H);for(let i=1;i<a.length;i++)ctx.lineTo(a[i].x*W,a[i].y*H);ctx.stroke()}ctx.restore()};
+ const redraw=()=>{ctx.clearRect(0,0,W,H);ann().forEach(draw)};pdfRedraw=redraw;redraw();
+ let cur=null,erased=false;
+ const pos=e=>{const r=po.getBoundingClientRect();return{x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))}};
+ const erase=p=>{const l=ann().length;n.pdfAnn[pdfNo]=ann().filter(s=>!s.points.some(q=>Math.hypot((q.x-p.x)*W,(q.y-p.y)*H)<14));if(ann().length!==l){erased=true;redraw()}};
+ po.onpointerdown=e=>{if(e.pointerType==="touch"&&!finger)return;e.preventDefault();po.setPointerCapture(e.pointerId);const p=pos(e);if(tool==="eraser"){cur={eraser:true};erase(p)}else{cur={tool,color,size,points:[p]};draw(cur)}};
+ po.onpointermove=e=>{if(!cur)return;e.preventDefault();for(const ev of (e.getCoalescedEvents?e.getCoalescedEvents():[e])){const p=pos(ev);if(cur.eraser)erase(p);else cur.points.push(p)}if(!cur.eraser){redraw();draw(cur)}};
+ const end=()=>{if(!cur)return;if(!cur.eraser)ann().push(cur);cur=null;redraw();n.updated=Date.now();save()};
+ po.onpointerup=end;po.onpointercancel=end}
+async function exportPdf(){const n=data.notes.find(x=>x.id===activeNote);if(!window.PDFLib){alert("Zum Exportieren braucht StudySpace Internet. Bitte lade die Seite mit Internet neu.");return}
+ try{const {PDFDocument,rgb,LineCapStyle}=PDFLib,doc=await PDFDocument.load(pdfBytes.slice(0));
+  doc.getPages().forEach((pg,i)=>{const w=pg.getSize().width,h=pg.getSize().height;for(const s of (n.pdfAnn[i+1]||[])){if(!s.points||!s.points.length)continue;const c=parseInt(s.color.slice(1),16),col=rgb((c>>16&255)/255,(c>>8&255)/255,(c&255)/255),P=s.points.map(p=>({x:p.x*w,y:h-p.y*h}));if(P.length===1)P.push({x:P[0].x+.1,y:P[0].y});
+   for(let k=1;k<P.length;k++)pg.drawLine({start:P[k-1],end:P[k],thickness:szOf(s)*w/600,color:col,opacity:s.tool==="highlighter"?.3:1,lineCap:LineCapStyle.Round})}});
+  const out=await doc.save(),a=document.createElement("a");a.href=URL.createObjectURL(new Blob([out],{type:"application/pdf"}));a.download=(n.pdfName||"StudySpace").replace(/\.pdf$/i,"")+"_bearbeitet.pdf";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),10000)}
+ catch(e){alert("Der Export hat nicht geklappt.");console.error(e)}}
+document.querySelectorAll("[data-page]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.page)));
+if("serviceWorker" in navigator&&location.protocol.startsWith("http")){navigator.serviceWorker.register("./sw.js").catch(()=>{});if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{})}
+try{render()}catch(err){console.error(err);$("#main").innerHTML=`<div class="card"><h1>StudySpace konnte nicht starten</h1><p>Bitte fotografiere diese Meldung und sende sie mir.</p><pre style="white-space:pre-wrap">${esc(err&&(err.stack||err.message)||err)}</pre></div>`}
+</script>
+</body>
+</html>
